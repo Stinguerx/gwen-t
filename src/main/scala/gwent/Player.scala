@@ -1,75 +1,62 @@
 package cl.uchile.dcc
 package gwent
 
-/** Trait that defines all attributes and behaviours of a player in Gwent*/
-trait Player {
-  /** @return the name of the player. */
-  def getName: String
+import scala.util.Random
 
-  /** @return the number of gems the player has. */
-  def getGems: Int
+/** Class that defines all attributes and behaviours of a player and is used to instantiate a player in Gwent.
+ *  The player starts with 2 gems, its initial deck is shuffled, and then 10 cards are drawn from it to the player's hand
+ *
+ *  @param name The name of the player (type: String).
+ *  @param deck The initial deck of cards for the player, a deck of 25 cards must be given (type: List[Card]).
+ */
+class Player(private val _name: String, private var _deck: List[Card]) {
+  /** Player initialization */
+  require(_deck.size == 25, "The deck given must have 25 cards")
+  private var _gems: Int = 2
+  private var _hand: List[Card] = List()
+  shuffleDeck()
+  drawCards(10)
+  
+  /** @return The name of the player. */
+  def name: String = _name
 
-  /** Removes one gem from the player */
-  def removeGem(): Unit
+  /** @return The number of gems the player has. */
+  def gems: Int = _gems
 
-  /** @return the list of cards in the player's hand. */
-  def getHand: List[Card]
+  /** Removes one gem from the player. Used after losing a round. Does nothing if the player has 0 gems. */
+  def removeGem(): Unit = {
+    if (_gems > 0) {
+      _gems -= 1
+    }
+  }
+
+  /** @return The list of cards in the player's hand. */
+  def hand: List[Card] = _hand
 
   /** @return the list of cards in the player's deck. */
-  def getDeck: List[Card]
+  def deck: List[Card] = _deck
 
   /** Shuffles the player's deck. */
-  def shuffleDeck(): Unit
-
-  /** Plays a from the player's hand.
-   *
-   *  @param position the position of the card to play.
-   */
-  def playCard(position: Int): Unit
-
-  /** Draws cards from the player's deck and adds them to their hand.
-   *  @param number the number of cards to draw (default: 1).
-   */
-  def drawCard(number: int = 1): Unit
-}
-
-/** Class that implements the Player trait.
- *  The Player is initialized with a name, 2 gems and a deck of cards. The deck gets shuffled, then 10 cards are drawn
- *  from it and get put in the Player's hand.
- *
- *  @param name the name of the player.
- *  @param deck the initial deck of cards for the player.
- */
-class GwentPlayer(name: String, deck: List[Card]) extends Player {
-  private var gems: Int = 2
-  shuffleDeck()
-  drawCard(10)
-
-  def getName: String = name
-
-  def getGems: Int = gems
-
-  def removeGem(): Unit = {
-    gems -= 1
-  }
-
-  def getHand: List[Card] = hand
-
-  def getDeck: List[Card] = deck
-
   def shuffleDeck(): Unit = {
-
+    _deck = Random.shuffle(_deck)
   }
 
-  def playCard(position: Int): Unit = {
-
+  /** Draws the specified number of cards from the player's deck and puts them in the player's hand.
+   *  If the number specified is greater than the number of cards available in the player's deck, it draws the maximum
+   *  number of cards it can before the deck becomes empty.
+   *
+   *  @param cards The number of cards to be drawn (type: Int, default = 1).
+   * */
+  def drawCards(cards: Int = 1): Unit = {
+    for (_ <- 1 to cards) {
+      if (_deck.nonEmpty) {
+        val drawnCard: Card = _deck.last
+        _deck = _deck.dropRight(1)
+        _hand = _hand :+ drawnCard
+      }
+      else break
+    }
   }
-
-  def drawCard(number: int = 1): Unit = {
-
-  }
-
 }
-
 
 
