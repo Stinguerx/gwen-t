@@ -2,94 +2,120 @@ package cl.uchile.dcc
 package gwent
 
 import munit.FunSuite
+import gwent.cards._
+import scala.collection.mutable.ArrayBuffer
 
 class PlayerTest extends FunSuite {
 
-  val card1 = new genericCard("unit1", "melee", 10)
-  val card2 = new genericCard("unit2", "ranged", 5)
-  val card3 = new genericCard("weather1", "weather", 0)
-  val deck: List[genericCard] = List(card1, card2, card3)
+  var testDeck: ArrayBuffer[Card] = ArrayBuffer(
+    new MeleeCard("Card 1", 1),
+    new MeleeCard("Card 2", 2),
+    new RangedCard("Card 3", 3),
+    new RangedCard("Card 4", 4),
+    new SiegeCard("Card 5", 5),
+    new SiegeCard("Card 6", 6),
+    new WeatherCard("Card 7"),
+    new MeleeCard("Card 1", 1),
+    new MeleeCard("Card 2", 2),
+    new RangedCard("Card 3", 3),
+    new RangedCard("Card 4", 4),
+    new SiegeCard("Card 5", 5),
+    new SiegeCard("Card 6", 6),
+    new WeatherCard("Card 7"),
+    new MeleeCard("Card 1", 1),
+    new MeleeCard("Card 2", 2),
+    new RangedCard("Card 3", 3),
+    new RangedCard("Card 4", 4),
+    new SiegeCard("Card 5", 5),
+    new SiegeCard("Card 6", 6),
+    new WeatherCard("Card 7"),
+    new MeleeCard("Card 1", 1),
+    new MeleeCard("Card 2", 2),
+    new RangedCard("Card 3", 3),
+    new RangedCard("Card 4", 4)
+  )
 
-  test("getName should return the player name") {
-    val player = new GwentPlayer("Player1", deck)
-    assertEquals(player.getName, "Player1")
+  test("Player initializes with the correct name and 2 gems") {
+    val player = new Player("Player 1", testDeck)
+    assertEquals(player.gems, 2)
+    assertEquals(player.name, "Player 1")
   }
 
-  test("getGems should return the number of gems, initially 2") {
-    val player = new GwentPlayer("Player1", deck)
-    assertEquals(player.getGems, 2)
+  test("Player initializes with a hand of 10 cards and a deck of 15 cards") {
+    val player = new Player("Player 1", testDeck)
+    assertEquals(player.hand.size, 10)
+    assertEquals(player.deck.size, 15)
   }
 
-  test("removeGem should decrease the number of gems by 1") {
-    val player = new GwentPlayer("Player1", deck)
+  test("removeGem removes one gem from the player") {
+    val player = new Player("Player 1", testDeck)
     player.removeGem()
-    assertEquals(player.getGems, 1)
+    assertEquals(player.gems, 1)
   }
 
-  test("getHand should return the list of cards in hand") {
-    val player = new GwentPlayer("Player1", deck)
-    assertEquals(player.getHand, List())
-    player.drawCard(2)
-    assertEquals(player.getHand, List(card1, card2))
+  test("removeGem doesn't set the player's gems below zero") {
+    val player = new Player("Player 1", testDeck)
+    player.removeGem()
+    player.removeGem()
+    player.removeGem()
+    assertEquals(player.gems, 0)
   }
 
-  test("getDeck should return the list of cards in the deck") {
-    val player = new GwentPlayer("Player1", deck)
-    assertEquals(player.getDeck, List(card1, card2, card3))
-  }
-
-  test("shuffleDeck should shuffle the deck") {
-    val player = new GwentPlayer("Player 1", deck)
+  test("shuffleDeck retains the same cards in the player's deck") {
+    val player = new Player("Player 1", testDeck)
+    val originalDeck: ArrayBuffer[Card] = player.deck.clone()
     player.shuffleDeck()
-
-    assert(deck != player.getDeck)
+    val shuffledDeck: ArrayBuffer[Card] = player.deck
+    assertEquals(originalDeck.sortBy(_.name), shuffledDeck.sortBy(_.name))
   }
 
-  test("playCard should remove the card from hand") {
-    val player = new GwentPlayer("Player 1", deck)
-    player.playCard(0)
-
-    assert(player.getHand == List(card2, card3))
+  test("drawCards() removes one card from the player's deck and puts it in it's hand") {
+    val player = new Player("Player 1", testDeck)
+    player.drawCards()
+    assertEquals(player.deck.size, 14)
+    assertEquals(player.hand.size, 11)
   }
 
-  test("playCard should throw an exception if position is out of bounds") {
-    val player = new GwentPlayer("Player 1", deck)
-    intercept[IndexOutOfBoundsException] {
-      player.playCard(5)
-    }
+  test("drawCards doesn't do anything if the player's deck is empty") {
+    val player = new Player("Player 1", testDeck)
+    player.drawCards(15)
+    val deck1 = player.deck.size
+    val hand1 = player.hand.size
+    player.drawCards()
+    val deck2 = player.deck.size
+    val hand2 = player.hand.size
+    assertEquals(deck1, deck2)
+    assertEquals(hand1, hand2)
   }
 
-  test("playCard should throw an exception if hand is empty") {
-    val player = new GwentPlayer("Player 1", deck)
-    intercept[NoSuchElementException] {
-      player.playCard(0)
-    }
+  test("Equals returns true for players with the same name, gems, hand and deck") {
+    val player1 = new Player("Player", testDeck)
+    val player2 = new Player("Player", testDeck)
+    assert(player1.equals(player2))
+    assert(player2.equals(player1))
   }
 
-  test("drawCard should add one card to the hand and remove one card from the deck") {
-    assertEquals(player.getHand, List())
-    player.drawCard()
-    assertEquals(player.getHand.length, 1)
-    assertEquals(player.getDeck.lenght, 2)
+  test("Equals returns false for players with different decks, hands, gems or name") {
+    val player1 = new Player("Player 1", testDeck)
+    val player2 = new Player("Player 2", testDeck)
+    val player3 = new Player("Player 1", testDeck)
+    player3.drawCards()
+    val player4 = new Player("Player 1", testDeck)
+    player4.removeGem()
+    assert(!player1.equals(player2))
+    assert(!player1.equals(player3))
+    assert(!player1.equals(player4))
   }
 
-  test("drawCard should add the specified number of cards to the hand") {
-    assertEquals(player.getHand, List())
-    player.drawCard(2)
-    assertEquals(player.getHand.length, 2)
+  test("Equals return false when comparing a player with another class") {
+    val player = new Player("Player 1", testDeck)
+    val card = new MeleeCard("melee",3)
+    assert(!player.equals(card))
   }
 
-  test("drawCard should throw an exception if deck is empty") {
-    val player = new GwentPlayer("Player 1", List())
-    intercept[NoSuchElementException] {
-      player.drawCard()
-    }
-  }
-
-  test("drawCard should throw an exception if drawing more cards than there are in the deck") {
-    val player = new GwentPlayer("Player 1", List(card1))
-    intercept[NoSuchElementException] {
-      player.drawCard(2)
-    }
+  test("HashCode returns the same value for players with the same name, gems, hand and deck") {
+    val player1 = new Player("Player", testDeck)
+    val player2 = new Player("Player", testDeck)
+    assertEquals(player1.hashCode(), player2.hashCode())
   }
 }
