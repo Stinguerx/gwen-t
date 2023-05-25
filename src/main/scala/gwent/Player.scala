@@ -2,7 +2,7 @@ package cl.uchile.dcc
 package gwent
 
 import cards.Card
-import cl.uchile.dcc.gwent.board.{BoardSection, Board}
+import gwent.board.{BoardSection, Board}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
