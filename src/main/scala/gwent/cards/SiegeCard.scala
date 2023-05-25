@@ -1,12 +1,21 @@
 package cl.uchile.dcc
 package gwent.cards
 
+import gwent.board.CardVisitor
+
+import gwent.Player
+
 /** Class used for instantiating siege type cards in Gwent.
  *
  *  @param name The name of the card.
  *  @param strength The strength of the card.
  *  */
-class SiegeCard(name: String, strength: Int) extends UnitCard(name, strength) {
+class SiegeCard(name: String, description: String, strength: Int) extends UnitCard(name, description, strength) {
+
+  def accept(visitor: CardVisitor, player: Player): Unit = {
+    visitor.visit(player, this)
+  }
+
   override def canEqual(that: Any): Boolean = that.isInstanceOf[SiegeCard]
 
   override def equals(that: Any): Boolean = {

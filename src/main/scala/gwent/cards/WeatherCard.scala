@@ -1,11 +1,19 @@
 package cl.uchile.dcc
 package gwent.cards
 
+import gwent.board.CardVisitor
+
+import gwent.Player
+
 /** Class used for instantiating weather type cards in Gwent.
  *
  *  @param name The name of the card.
  *  */
-class WeatherCard(name: String) extends Card(name) {
+class WeatherCard(name: String, description: String) extends Card(name, description) {
+
+  def accept(visitor: CardVisitor, player: Player): Unit = {
+    visitor.visit(player, this)
+  }
   override def canEqual(that: Any): Boolean = that.isInstanceOf[WeatherCard]
 
   override def equals(that: Any): Boolean = {
