@@ -2,27 +2,47 @@ package cl.uchile.dcc
 package gwent
 
 import cards.Card
+import cl.uchile.dcc.gwent.board.{BoardSection, Board}
+
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-/** Class that implements the IPlayer trait and defines all attributes and behaviours of a player and is used to
- *  instantiate a player in Gwent. The player starts with 2 gems, its initial deck is shuffled, and then 10 cards
- *  are drawn from it to the player's hand.
+/**
+ * Class that implements the IPlayer trait. The player starts with 2 gems, its initial deck is shuffled, and then 10
+ * cards are drawn from it to the player's hand. It also holds a reference to a game board and the section assigned to
+ * the player that start as None.
  *
  *  @param name The name of the player (type: String).
  *  @param deck The initial deck of cards for the player, a deck of 25 cards must be given (type: List[Card]).
  */
 class Player(private val _name: String, private val initialDeck: ArrayBuffer[Card]) extends IPlayer with Equals {
+
   /** Player initialization */
   require(initialDeck.size == 25, "The deck given must have 25 cards")
   private var _deck: ArrayBuffer[Card] = initialDeck.clone()
   private var _gems: Int = 2
   private var _hand: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
+  private var _assignedSection: Option[BoardSection] = None
+  private var _board: Option[Board] = None
   shuffleDeck()
   drawCards(10)
   
   /** @return The name of the player. */
   def name: String = _name
+
+  /** @return The assigned section of the board to the player. */
+  def assignedSection: Option[BoardSection] = _assignedSection
+
+  def assignedSection_=(section: BoardSection): Unit = {
+    _assignedSection = Some(section)
+  }
+
+  /** @return The board the player is associated with. */
+  def board: Option[Board] = _board
+
+  def board_=(board: Board): Unit = {
+    _board = Some(board)
+  }
 
   /** @return The number of gems the player has. */
   def gems: Int = _gems
@@ -37,10 +57,9 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[Car
   /** @return The list of cards in the player's hand. */
   def hand: ArrayBuffer[Card] = _hand
 
-  /** @return the list of cards in the player's deck. */
+  /** @return The list of cards in the player's deck. */
   def deck: ArrayBuffer[Card] = _deck
 
-  /** Shuffles the player's deck. */
   def shuffleDeck(): Unit = {
     Random.shuffle(_deck)
   }
@@ -56,6 +75,16 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[Car
     }
   }
 
+  def playCard(position: Int): Unit = {
+    if (position > _hand.size) {
+      throw new Error("The specified card does not exist.")
+    }
+    if (_board.isEmpty) {
+      throw new Error("The player doesn't have a game board assigned.")
+    }
+    val card: Card = _hand(position-1)
+    _board.foreach(_.placeCard(this, card))
+  }
   override def canEqual(that: Any): Boolean = that.isInstanceOf[Player]
 
   override def equals(that: Any): Boolean = {
