@@ -8,31 +8,31 @@ import scala.collection.mutable.ArrayBuffer
 class PlayerTest extends FunSuite {
 
   var testDeck: ArrayBuffer[Card] = ArrayBuffer(
-    new MeleeCard("Card 1", 1),
-    new MeleeCard("Card 2", 2),
-    new RangedCard("Card 3", 3),
-    new RangedCard("Card 4", 4),
-    new SiegeCard("Card 5", 5),
-    new SiegeCard("Card 6", 6),
-    new WeatherCard("Card 7"),
-    new MeleeCard("Card 1", 1),
-    new MeleeCard("Card 2", 2),
-    new RangedCard("Card 3", 3),
-    new RangedCard("Card 4", 4),
-    new SiegeCard("Card 5", 5),
-    new SiegeCard("Card 6", 6),
-    new WeatherCard("Card 7"),
-    new MeleeCard("Card 1", 1),
-    new MeleeCard("Card 2", 2),
-    new RangedCard("Card 3", 3),
-    new RangedCard("Card 4", 4),
-    new SiegeCard("Card 5", 5),
-    new SiegeCard("Card 6", 6),
-    new WeatherCard("Card 7"),
-    new MeleeCard("Card 1", 1),
-    new MeleeCard("Card 2", 2),
-    new RangedCard("Card 3", 3),
-    new RangedCard("Card 4", 4)
+    new MeleeCard("Card 1", "desc", 1),
+    new MeleeCard("Card 2", "desc", 2),
+    new RangedCard("Card 3", "desc", 3),
+    new RangedCard("Card 4", "desc", 4),
+    new SiegeCard("Card 5", "desc", 5),
+    new SiegeCard("Card 6", "desc", 6),
+    new WeatherCard("Card 7", "desc"),
+    new MeleeCard("Card 8", "desc", 1),
+    new MeleeCard("Card 9", "desc", 2),
+    new RangedCard("Card 10", "desc", 3),
+    new RangedCard("Card 11", "desc", 4),
+    new SiegeCard("Card 12", "desc", 5),
+    new SiegeCard("Card 13", "desc", 6),
+    new WeatherCard("Card 14", "desc"),
+    new MeleeCard("Card 15", "desc", 1),
+    new MeleeCard("Card 16", "desc", 2),
+    new RangedCard("Card 17", "desc", 3),
+    new RangedCard("Card 18", "desc", 4),
+    new SiegeCard("Card 19", "desc", 5),
+    new SiegeCard("Card 20", "desc", 6),
+    new WeatherCard("Card 21", "desc"),
+    new MeleeCard("Card 22", "desc", 1),
+    new MeleeCard("Card 23", "desc", 2),
+    new RangedCard("Card 24", "desc", 3),
+    new RangedCard("Card 25", "desc", 4)
   )
 
   test("Player initializes with the correct name and 2 gems") {
@@ -88,6 +88,24 @@ class PlayerTest extends FunSuite {
     assertEquals(hand1, hand2)
   }
 
+  test("Play cards throws an error when trying to play a card without a board assigned") {
+    val player1 = new Player("Player", testDeck)
+    val exception = interceptMessage[Error]("The player doesn't have a game board assigned.") {
+      player1.playCard(0)
+      throw new Error("The player doesn't have a game board assigned.")
+    }
+    assertEquals(exception.getMessage, "The player doesn't have a game board assigned.")
+  }
+
+  test("Play cards throws an error when trying to play a card with position out of bounds") {
+    val player1 = new Player("Player", testDeck)
+    val exception = interceptMessage[Error]("The specified card does not exist.") {
+      player1.playCard(100)
+      throw new Error("The specified card does not exist.")
+    }
+    assertEquals(exception.getMessage, "The specified card does not exist.")
+  }
+
   test("Equals returns true for players with the same name, gems, hand and deck") {
     val player1 = new Player("Player", testDeck)
     val player2 = new Player("Player", testDeck)
@@ -109,7 +127,7 @@ class PlayerTest extends FunSuite {
 
   test("Equals return false when comparing a player with another class") {
     val player = new Player("Player 1", testDeck)
-    val card = new MeleeCard("melee",3)
+    val card = new MeleeCard("melee", "desc",3)
     assert(!player.equals(card))
   }
 
