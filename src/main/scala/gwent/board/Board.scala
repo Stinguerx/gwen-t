@@ -11,8 +11,8 @@ import gwent.Player
  * board sections and assigns each player to one of them. It also creates an instance of the CardPlacer class to handle
  * the placement of cards in each section.
  *
- * @param player1 the first player associated with this particular instance of the game.
- * @param player2 the second player associated with this particular instance of the game.
+ * @param player1 the first player associated with this particular board.
+ * @param player2 the second player associated with this particular board.
  * */
 class Board(player1: Player, player2: Player) extends IBoard {
   private val cardPlacer = new CardPlacer
@@ -31,7 +31,7 @@ class Board(player1: Player, player2: Player) extends IBoard {
   /** @return the second section of the board */
   def SectionB: BoardSection = _SectionB
 
-  /** @return the current active weather card in the board, if there is one. */
+  /** @return the current active weather card in the board */
   def weather: Option[WeatherCard] = _weather
 
   /**
@@ -43,8 +43,17 @@ class Board(player1: Player, player2: Player) extends IBoard {
     _weather = Some(card)
   }
 
-  def placeCard(player: Player, card: Card): Unit = {
+  /**
+   *  Places the card in the correct section and zone by looking for the appropriate method in the specific card.
+   */
+  def placeCard(player: Player, card: ICard): Unit = {
     card.accept(cardPlacer, player)
   }
 
+  /** Clears the board by removing every card that's been played */
+  def clearBoard(): Unit = {
+    SectionA.clear()
+    SectionB.clear()
+    _weather = None
+  }
 }
