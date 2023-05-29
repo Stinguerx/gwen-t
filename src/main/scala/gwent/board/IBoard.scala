@@ -16,6 +16,6 @@ trait IBoard {
    * @param player the player that wants to place a card.
    * @param card the card the player wants to place in the board.
    * */
-  def placeCard(player: Player, card: Card): Unit
+  def placeCard(player: Player, card: ICard): Unit
 
 }

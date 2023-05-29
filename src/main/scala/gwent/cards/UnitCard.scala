@@ -3,7 +3,7 @@ package gwent.cards
 
 
 /** Abstract class that defines the common attributes and behaviours of all unit cards in Gwent. */
-abstract class UnitCard(name: String, description: String, protected val _strength: Int) extends Card(name, description ) {
+abstract class UnitCard(name: String, description: String, protected val _strength: Int) extends Card(name, description) {
   private var _currentStrength: Int = _strength
 
   /** @return The default strength of the card. */

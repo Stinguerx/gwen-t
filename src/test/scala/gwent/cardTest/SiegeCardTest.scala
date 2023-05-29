@@ -1,5 +1,5 @@
 package cl.uchile.dcc
-package gwent.cardTests
+package gwent.cardTest
 
 import munit.FunSuite
 import gwent.cards._
@@ -30,30 +30,31 @@ class SiegeCardTest extends FunSuite {
     assertEquals(card.currentStrength, 0)
   }
 
-  test("Equals returns true for two SiegeCard with the same name and strength") {
+  test("Equals returns true for two SiegeCard with the same name, strength and description") {
     val card1 = new SiegeCard("Trebuchet", "desc", 5)
     val card2 = new SiegeCard("Trebuchet", "desc", 5)
     assert(card1.equals(card2))
     assert(card2.equals(card1))
   }
 
-  test("Equals returns false when comparing two SiegeCard with different names or strength") {
+  test("Equals returns false when comparing two SiegeCard with different names, strength or description") {
     val card1 = new SiegeCard("Trebuchet", "desc", 1)
     val card2 = new SiegeCard("Trebuchet", "desc", 5)
     val card3 = new SiegeCard("Ballista", "desc", 5)
+    val card4 = new SiegeCard("Ballista", "desc2", 5)
     assert(!card1.equals(card2))
     assert(!card2.equals(card3))
     assert(!card1.equals(card3))
+    assert(!card3.equals(card4))
   }
 
   test("Equals returns false when comparing a SiegeCard with another type of Card") {
     val card1 = new SiegeCard("Archer", "desc", 5)
     val card2 = new WeatherCard("Frost", "desc")
-
     assert(!card1.equals(card2))
   }
 
-  test("HashCode returns the same value for two SiegeCard with the same name and strength") {
+  test("HashCode returns the same value for two SiegeCard with the same name, strength and description") {
     val card1 = new SiegeCard("Frost", "desc", 2)
     val card2 = new SiegeCard("Frost", "desc", 2)
     assertEquals(card1.hashCode(), card2.hashCode())

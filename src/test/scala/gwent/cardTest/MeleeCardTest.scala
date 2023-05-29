@@ -1,8 +1,7 @@
 package cl.uchile.dcc
-package gwent.cardTests
+package gwent.cardTest
 
 import gwent.cards._
-
 import munit.FunSuite
 
 class MeleeCardTest extends FunSuite {
@@ -32,20 +31,22 @@ class MeleeCardTest extends FunSuite {
   }
 
 
-  test("Equals returns true for two RangedCards with the same name and strength") {
+  test("Equals returns true for two RangedCards with the same name, strength and description") {
     val card1 = new MeleeCard("Geralt", "desc", 5)
     val card2 = new MeleeCard("Geralt", "desc", 5)
     assert(card1.equals(card2))
     assert(card2.equals(card1))
   }
 
-  test("Equals returns false when comparing two MeleeCards with different names or strength") {
+  test("Equals returns false when comparing two MeleeCards with different names, strength or description") {
     val card1 = new MeleeCard("Geralt", "desc", 1)
     val card2 = new MeleeCard("Geralt", "desc", 5)
     val card3 = new MeleeCard("Vesemir", "desc", 5)
+    val card4 = new MeleeCard("Vesemir", "desc2", 5)
     assert(!card1.equals(card2))
     assert(!card2.equals(card3))
     assert(!card1.equals(card3))
+    assert(!card3.equals(card4))
   }
 
   test("Equals returns false when comparing a MeleeCard with another type of Card") {
@@ -54,7 +55,7 @@ class MeleeCardTest extends FunSuite {
     assert(!card1.equals(card2))
   }
 
-  test("HashCode returns the same value for two RangedCards with the same name and strength") {
+  test("HashCode returns the same value for two RangedCards with the same name, strength and description") {
     val card1 = new MeleeCard("Geralt", "desc", 5)
     val card2 = new MeleeCard("Geralt", "desc", 5)
     assertEquals(card1.hashCode(), card2.hashCode())

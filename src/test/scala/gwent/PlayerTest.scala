@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class PlayerTest extends FunSuite {
 
-  var testDeck: ArrayBuffer[Card] = ArrayBuffer(
+  var testDeck: ArrayBuffer[ICard] = ArrayBuffer(
     new MeleeCard("Card 1", "desc", 1),
     new MeleeCard("Card 2", "desc", 2),
     new RangedCard("Card 3", "desc", 3),
@@ -63,13 +63,13 @@ class PlayerTest extends FunSuite {
 
   test("shuffleDeck retains the same cards in the player's deck") {
     val player = new Player("Player 1", testDeck)
-    val originalDeck: ArrayBuffer[Card] = player.deck.clone()
+    val originalDeck: ArrayBuffer[ICard] = player.deck.clone()
     player.shuffleDeck()
-    val shuffledDeck: ArrayBuffer[Card] = player.deck
+    val shuffledDeck: ArrayBuffer[ICard] = player.deck
     assertEquals(originalDeck.sortBy(_.name), shuffledDeck.sortBy(_.name))
   }
 
-  test("drawCards() removes one card from the player's deck and puts it in it's hand") {
+  test("drawCards removes one card from the player's deck and puts it in it's hand") {
     val player = new Player("Player 1", testDeck)
     player.drawCards()
     assertEquals(player.deck.size, 14)
@@ -88,7 +88,7 @@ class PlayerTest extends FunSuite {
     assertEquals(hand1, hand2)
   }
 
-  test("Play cards throws an error when trying to play a card without a board assigned") {
+  test("playCard throws an error when trying to play a card without a board assigned") {
     val player1 = new Player("Player", testDeck)
     val exception = interceptMessage[Error]("The player doesn't have a game board assigned.") {
       player1.playCard(0)
@@ -97,7 +97,7 @@ class PlayerTest extends FunSuite {
     assertEquals(exception.getMessage, "The player doesn't have a game board assigned.")
   }
 
-  test("Play cards throws an error when trying to play a card with position out of bounds") {
+  test("playCard throws an error when trying to play a card with position out of bounds") {
     val player1 = new Player("Player", testDeck)
     val exception = interceptMessage[Error]("The specified card does not exist.") {
       player1.playCard(100)
