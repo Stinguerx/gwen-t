@@ -39,4 +39,11 @@ class BoardSection {
   def placeCard(card: SiegeCard): Unit = {
     _SiegeZone += card
   }
+
+  /** Empties every zone in the section. */
+  def clear(): Unit = {
+    _MeleeZone.clear()
+    _RangedZone.clear()
+    _SiegeZone.clear()
+  }
 }
