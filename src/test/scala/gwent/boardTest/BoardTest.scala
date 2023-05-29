@@ -1,17 +1,15 @@
 package cl.uchile.dcc
-package gwent.BoardTest
+package gwent.boardTest
 
-import gwent.board.{Board, BoardSection}
+import gwent.board._
 import gwent.cards._
 import gwent.Player
-
 import munit.FunSuite
-
 import scala.collection.mutable.ArrayBuffer
 
 class BoardTest extends FunSuite{
 
-  var testDeck: ArrayBuffer[Card] = ArrayBuffer(
+  var testDeck: ArrayBuffer[ICard] = ArrayBuffer(
     new MeleeCard("Card 1", "desc", 1),
     new MeleeCard("Card 2", "desc", 2),
     new RangedCard("Card 3", "desc", 3),
@@ -116,21 +114,17 @@ class BoardTest extends FunSuite{
     assert(siegeCard2.equals(board.SectionB.SiegeZone(0)))
   }
 
-  test("") {
-
+  test("clearBoard clears every card that's been played in the board") {
+    val range = 1 to 10
+    range.foreach(player1.playCard)
+    range.foreach(player2.playCard)
+    board.clearBoard()
+    assert(section1.MeleeZone.isEmpty)
+    assert(section1.RangedZone.isEmpty)
+    assert(section1.SiegeZone.isEmpty)
+    assert(section2.MeleeZone.isEmpty)
+    assert(section2.RangedZone.isEmpty)
+    assert(section2.SiegeZone.isEmpty)
+    assert(board.weather.isEmpty)
   }
-
-  test("") {
-
-  }
-
-  test("") {
-
-  }
-
-  test("") {
-
-  }
-
-
 }
