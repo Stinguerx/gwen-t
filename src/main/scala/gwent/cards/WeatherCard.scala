@@ -19,7 +19,7 @@ class WeatherCard(name: String, description: String) extends Card(name, descript
   override def equals(that: Any): Boolean = {
     if (canEqual(that)) {
       val other = that.asInstanceOf[WeatherCard]
-      (this eq other) || (this.name == other.name)
+      (this eq other) || ((this.name == other.name) && (this.description == other.description))
     } else false
   }
 
@@ -28,6 +28,7 @@ class WeatherCard(name: String, description: String) extends Card(name, descript
     var result = 1
     result = prime * result + classOf[UnitCard].##
     result = prime * result + name.##
+    result = prime * result + description.##
     result
   }
 }

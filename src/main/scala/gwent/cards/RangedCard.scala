@@ -21,7 +21,7 @@ class RangedCard(name: String, description: String, strength: Int) extends UnitC
   override def equals(that: Any): Boolean = {
     if (canEqual(that)) {
       val other = that.asInstanceOf[RangedCard]
-      (this eq other) || ((this.name == other.name) && (this.strength == other.strength))
+      (this eq other) || ((this.name == other.name) && (this.strength == other.strength) && (this.description == other.description))
     } else false
   }
 
@@ -31,6 +31,7 @@ class RangedCard(name: String, description: String, strength: Int) extends UnitC
     result = prime * result + classOf[UnitCard].##
     result = prime * result + name.##
     result = prime * result + strength.##
+    result = prime * result + description.##
     result
   }
 }

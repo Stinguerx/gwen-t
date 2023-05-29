@@ -21,7 +21,7 @@ class MeleeCard(name: String, description: String, strength: Int) extends UnitCa
   override def equals(that: Any): Boolean = {
     if (canEqual(that)) {
       val other = that.asInstanceOf[MeleeCard]
-      (this eq other) || ((this.name == other.name) && (this.strength == other.strength))
+      (this eq other) || ((this.name == other.name) && (this.strength == other.strength) && (this.description == other.description))
     } else false
   }
 
@@ -31,6 +31,7 @@ class MeleeCard(name: String, description: String, strength: Int) extends UnitCa
     result = prime * result + classOf[UnitCard].##
     result = prime * result + name.##
     result = prime * result + strength.##
+    result = prime * result + description.##
     result
   }
 }
