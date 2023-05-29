@@ -18,4 +18,6 @@ trait IBoard {
    * */
   def placeCard(player: Player, card: ICard): Unit
 
+  /** Clears the board by removing every card that's been played */
+  def clearBoard(): Unit
 }

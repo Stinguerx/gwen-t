@@ -43,14 +43,10 @@ class Board(player1: Player, player2: Player) extends IBoard {
     _weather = Some(card)
   }
 
-  /**
-   *  Places the card in the correct section and zone by looking for the appropriate method in the specific card.
-   */
   def placeCard(player: Player, card: ICard): Unit = {
     card.accept(cardPlacer, player)
   }
 
-  /** Clears the board by removing every card that's been played */
   def clearBoard(): Unit = {
     SectionA.clear()
     SectionB.clear()
