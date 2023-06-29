@@ -83,6 +83,7 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
       throw new Error("The player doesn't have a game board assigned.")
     }
     val card: ICard = _hand(position-1)
+    _hand -= card
     _board.foreach(_.placeCard(this, card))
   }
   override def canEqual(that: Any): Boolean = that.isInstanceOf[Player]

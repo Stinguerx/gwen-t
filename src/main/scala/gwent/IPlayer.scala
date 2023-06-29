@@ -1,9 +1,6 @@
 package cl.uchile.dcc
 package gwent
 
-import gwent.cards.Card
-
-import scala.collection.mutable.ArrayBuffer
 
 /** Trait that defines all the common behaviours of a player in the game Gwent */
 trait IPlayer {
