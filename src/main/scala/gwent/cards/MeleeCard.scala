@@ -2,15 +2,19 @@ package cl.uchile.dcc
 package gwent.cards
 
 import gwent.board.CardVisitor
-
 import gwent.Player
+
+import gwent.cardEffects.CardEffect
 
 /** Class used for instantiating melee type cards in Gwent.
  *
  *  @param name The name of the card.
  *  @param strength The strength of the card.
  * */
-class MeleeCard(name: String, description: String, strength: Int) extends UnitCard(name, description, strength) {
+class MeleeCard(name: String,
+                description: String,
+                strength: Int,
+                cardEffect: Option[CardEffect] = None) extends UnitCard(name, description, strength, cardEffect) {
 
   def accept(visitor: CardVisitor, player: Player): Unit = {
     visitor.visit(player, this)

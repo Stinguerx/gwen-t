@@ -1,7 +1,7 @@
 package cl.uchile.dcc
 package gwent.board
 
-import gwent.cards.{Card, MeleeCard, RangedCard, SiegeCard}
+import gwent.cards.{MeleeCard, RangedCard, SiegeCard, WeatherCard}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -26,21 +26,83 @@ class BoardSection {
   def SiegeZone: ArrayBuffer[SiegeCard] = _SiegeZone
 
   /** Method in charge of placing Melee type cards in their zone. */
-  def placeCard(card: MeleeCard): Unit = {
-    _MeleeZone += card
+  def placeCard(placedCard: MeleeCard): Unit = {
+    if (placedCard.cardEffect.nonEmpty) {
+      if (placedCard.cardEffect.get.selfEffect) {
+        _MeleeZone += placedCard
+        applyMeleeEffect(placedCard)
+      } else {
+        applyMeleeEffect(placedCard)
+        _MeleeZone += placedCard
+      }
+    } else {
+      _MeleeZone += placedCard
+    }
   }
 
   /** Method in charge of placing Ranged type cards in their zone. */
-  def placeCard(card: RangedCard): Unit = {
-    _RangedZone += card
+  def placeCard(placedCard: RangedCard): Unit = {
+    if (placedCard.cardEffect.nonEmpty) {
+      if (placedCard.cardEffect.get.selfEffect) {
+        _RangedZone += placedCard
+        applyRangedEffect(placedCard)
+      } else {
+        applyRangedEffect(placedCard)
+        _RangedZone += placedCard
+      }
+    } else {
+      _RangedZone += placedCard
+    }
   }
 
   /** Method in charge of placing Siege type cards in their zone. */
-  def placeCard(card: SiegeCard): Unit = {
-    _SiegeZone += card
+  def placeCard(placedCard: SiegeCard): Unit = {
+    if (placedCard.cardEffect.nonEmpty) {
+      if (placedCard.cardEffect.get.selfEffect) {
+        _SiegeZone += placedCard
+        applySiegeEffect(placedCard)
+      } else {
+        applySiegeEffect(placedCard)
+        _SiegeZone += placedCard
+      }
+    } else {
+      _SiegeZone += placedCard
+    }
   }
 
-  /** Empties every zone in the section. */
+  private def applyMeleeEffect(placedCard: MeleeCard): Unit = {
+    for (elem <- _MeleeZone) {
+      placedCard.cardEffect.get.applyEffect(placedCard, elem)
+    }
+  }
+
+  private def applyRangedEffect(placedCard: RangedCard): Unit = {
+    for (elem <- _RangedZone) {
+      placedCard.cardEffect.get.applyEffect(placedCard, elem)
+    }
+  }
+
+  private def applySiegeEffect(placedCard: SiegeCard): Unit = {
+    for (elem <- _SiegeZone) {
+      placedCard.cardEffect.get.applyEffect(placedCard, elem)
+    }
+  }
+
+  def applyGlobalEffect(placedCard: WeatherCard): Unit = {
+    for (elem <- _MeleeZone) {
+      placedCard.cardEffect.get.applyEffect(placedCard, elem)
+    }
+
+    for (elem <- _RangedZone) {
+      placedCard.cardEffect.get.applyEffect(placedCard, elem)
+    }
+
+    for (elem <- _SiegeZone) {
+      placedCard.cardEffect.get.applyEffect(placedCard, elem)
+    }
+  }
+
+   /** Empties every zone in the section. */
   def clear(): Unit = {
     _MeleeZone.clear()
     _RangedZone.clear()

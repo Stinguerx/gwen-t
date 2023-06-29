@@ -1,9 +1,15 @@
 package cl.uchile.dcc
 package gwent.cards
 
+import gwent.cardEffects.CardEffect
+
 
 /** Abstract class that defines the common attributes and behaviours of all unit cards in Gwent. */
-abstract class UnitCard(name: String, description: String, protected val _strength: Int) extends Card(name, description) {
+abstract class UnitCard(name: String,
+                        description: String,
+                        protected val _strength: Int,
+                        protected val _cardEffect: Option[CardEffect] = None) extends Card(name, description) {
+
   private var _currentStrength: Int = _strength
 
   /** @return The default strength of the card. */
@@ -18,5 +24,7 @@ abstract class UnitCard(name: String, description: String, protected val _streng
   def currentStrength_=(newStrength: Int): Unit = {
     _currentStrength = newStrength.max(0)
   }
+
+  def cardEffect: Option[CardEffect] = _cardEffect
 
 }
