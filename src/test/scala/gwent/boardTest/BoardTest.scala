@@ -115,7 +115,7 @@ class BoardTest extends FunSuite{
   }
 
   test("clearBoard clears every card that's been played in the board") {
-    val range = 1 to 10
+    val range = 10 to 1
     range.foreach(player1.playCard)
     range.foreach(player2.playCard)
     board.clearBoard()
