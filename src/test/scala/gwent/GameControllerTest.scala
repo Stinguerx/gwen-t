@@ -4,6 +4,7 @@ package gwent
 import gwent.cards._
 import gwent.controller._
 import gwent.view._
+import java.io.{ByteArrayOutputStream, PrintStream}
 
 import gwent.controller.states._
 import munit.FunSuite
@@ -57,6 +58,21 @@ class GameControllerTest extends FunSuite {
   test("addPlayers works correctly") {
     game.addPlayers(player1, player2)
     assertEquals(game.getPlayers, List(player1, player2))
+  }
+
+  test("The player notifies the controller when their gems reach zero") {
+
+
+    val outputStream = new ByteArrayOutputStream()
+    Console.withOut(new PrintStream(outputStream)) {
+      game.addPlayers(player1, player2)
+      player1.registerObserver(game)
+      player1.removeGem()
+      player1.removeGem()
+    }
+    val printedOutput = outputStream.toString.trim
+    val expectedOutput = "Player 2 won"
+    assert(printedOutput.contains(expectedOutput))
   }
 
   test("startGame works correctly") {
