@@ -4,6 +4,8 @@ package gwent
 import cards.{Card, ICard}
 import gwent.board.{Board, BoardSection}
 
+import cl.uchile.dcc.gwent.controller.GameController
+
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
@@ -24,6 +26,8 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
   private var _hand: ArrayBuffer[ICard] = ArrayBuffer.empty[ICard]
   private var _assignedSection: Option[BoardSection] = None
   private var _board: Option[Board] = None
+  private var observer: GameController = _
+  private var _alive: Boolean = true
   shuffleDeck()
   drawCards(10)
   
@@ -47,10 +51,16 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
   /** @return The number of gems the player has. */
   def gems: Int = _gems
 
+  def alive: Boolean  = _alive
+
   /** Removes one gem from the player. Used after losing a round. Does nothing if the player has 0 gems. */
   def removeGem(): Unit = {
     if (_gems > 0) {
       _gems -= 1
+    }
+    if (gems == 0) {
+      _alive = false
+      notifyObserver()
     }
   }
 
@@ -86,6 +96,21 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
     _hand -= card
     _board.foreach(_.placeCard(this, card))
   }
+
+  /** Registers a game controller as an observer of the player
+   * @param newObserver The game controller
+   *  */
+  def registerObserver(newObserver: GameController): Unit = {
+    observer = newObserver
+  }
+
+  /** Notifies the game controller of a change in state in the player */
+  private def notifyObserver(): Unit = {
+    if (_gems == 0) {
+      observer.update(this)
+    }
+  }
+
   override def canEqual(that: Any): Boolean = that.isInstanceOf[Player]
 
   override def equals(that: Any): Boolean = {
