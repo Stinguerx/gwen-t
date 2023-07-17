@@ -3,6 +3,8 @@ package gwent.board
 
 import gwent.cards.{MeleeCard, RangedCard, SiegeCard, WeatherCard}
 
+import gwent.cardEffects.CardEffect
+
 import scala.collection.mutable.ArrayBuffer
 
 
@@ -25,81 +27,44 @@ class BoardSection {
   /** @return The array of cards in the siege zone of the board */
   def SiegeZone: ArrayBuffer[SiegeCard] = _SiegeZone
 
-  /** Method in charge of placing Melee type cards in their zone. */
-  def placeCard(placedCard: MeleeCard): Unit = {
-    if (placedCard.cardEffect.nonEmpty) {
-      if (placedCard.cardEffect.get.selfEffect) {
-        _MeleeZone += placedCard
-        applyMeleeEffect(placedCard)
-      } else {
-        applyMeleeEffect(placedCard)
-        _MeleeZone += placedCard
-      }
-    } else {
-      _MeleeZone += placedCard
+  /** Method in charge of placing Melee type cards in their zone and applying their effects. */
+  def addMeleeCard(card: MeleeCard): Unit = {
+    _MeleeZone += card
+    if (card.cardEffect.nonEmpty) {
+      card.cardEffect.get.applyEffect(card, _MeleeZone)
     }
   }
 
-  /** Method in charge of placing Ranged type cards in their zone. */
-  def placeCard(placedCard: RangedCard): Unit = {
-    if (placedCard.cardEffect.nonEmpty) {
-      if (placedCard.cardEffect.get.selfEffect) {
-        _RangedZone += placedCard
-        applyRangedEffect(placedCard)
-      } else {
-        applyRangedEffect(placedCard)
-        _RangedZone += placedCard
-      }
-    } else {
-      _RangedZone += placedCard
+  /** Method in charge of placing Ranged type cards in their zone applying their effects. */
+  def addRangedCard(card: RangedCard): Unit = {
+    _RangedZone += card
+    if (card.cardEffect.nonEmpty) {
+      card.cardEffect.get.applyEffect(card, _RangedZone)
     }
   }
 
-  /** Method in charge of placing Siege type cards in their zone. */
-  def placeCard(placedCard: SiegeCard): Unit = {
-    if (placedCard.cardEffect.nonEmpty) {
-      if (placedCard.cardEffect.get.selfEffect) {
-        _SiegeZone += placedCard
-        applySiegeEffect(placedCard)
-      } else {
-        applySiegeEffect(placedCard)
-        _SiegeZone += placedCard
-      }
-    } else {
-      _SiegeZone += placedCard
+  /** Method in charge of placing Siege type cards in their zone applying their effects. */
+  def addSiegeCard(card: SiegeCard): Unit = {
+    _SiegeZone += card
+    if (card.cardEffect.nonEmpty) {
+      card.cardEffect.get.applyEffect(card, _SiegeZone)
     }
   }
 
-  private def applyMeleeEffect(placedCard: MeleeCard): Unit = {
-    for (elem <- _MeleeZone) {
-      placedCard.cardEffect.get.applyEffect(placedCard, elem)
-    }
+  /** Method called when a weather card is placed and its effect must be propagated to all cards. */
+  def applyWeatherEffect(placedCard: WeatherCard): Unit = {
+    val effect: CardEffect = placedCard.cardEffect
+    if (placedCard.affectedCards._1) effect.applyEffect(placedCard, _MeleeZone)
+    if (placedCard.affectedCards._2) effect.applyEffect(placedCard, _RangedZone)
+    if (placedCard.affectedCards._3) effect.applyEffect(placedCard, _SiegeZone)
   }
 
-  private def applyRangedEffect(placedCard: RangedCard): Unit = {
-    for (elem <- _RangedZone) {
-      placedCard.cardEffect.get.applyEffect(placedCard, elem)
-    }
-  }
+  def calculateStrength(): Int = {
+    val result: Int = _MeleeZone.map(_.currentStrength).sum +
+                      _RangedZone.map(_.currentStrength).sum +
+                      _SiegeZone.map(_.currentStrength).sum
 
-  private def applySiegeEffect(placedCard: SiegeCard): Unit = {
-    for (elem <- _SiegeZone) {
-      placedCard.cardEffect.get.applyEffect(placedCard, elem)
-    }
-  }
-
-  def applyGlobalEffect(placedCard: WeatherCard): Unit = {
-    for (elem <- _MeleeZone) {
-      placedCard.cardEffect.get.applyEffect(placedCard, elem)
-    }
-
-    for (elem <- _RangedZone) {
-      placedCard.cardEffect.get.applyEffect(placedCard, elem)
-    }
-
-    for (elem <- _SiegeZone) {
-      placedCard.cardEffect.get.applyEffect(placedCard, elem)
-    }
+    result
   }
 
    /** Empties every zone in the section. */
