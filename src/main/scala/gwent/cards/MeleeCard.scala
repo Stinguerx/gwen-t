@@ -1,10 +1,10 @@
 package cl.uchile.dcc
 package gwent.cards
 
-import gwent.board.CardVisitor
-import gwent.Player
-
+import gwent.board.{Board, BoardSection}
 import gwent.cardEffects.CardEffect
+
+import cl.uchile.dcc.gwent.player.Player
 
 /** Class used for instantiating melee type cards in Gwent.
  *
@@ -16,8 +16,8 @@ class MeleeCard(name: String,
                 strength: Int,
                 cardEffect: Option[CardEffect] = None) extends UnitCard(name, description, strength, cardEffect) {
 
-  def accept(visitor: CardVisitor, player: Player): Unit = {
-    visitor.visit(player, this)
+  def accept(section: BoardSection, board: Board): Unit = {
+    section.addMeleeCard(this)
   }
 
   override def canEqual(that: Any): Boolean = that.isInstanceOf[MeleeCard]

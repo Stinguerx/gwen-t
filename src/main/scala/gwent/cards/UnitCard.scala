@@ -8,22 +8,20 @@ import gwent.cardEffects.CardEffect
 abstract class UnitCard(name: String,
                         description: String,
                         protected val _strength: Int,
-                        protected val _cardEffect: Option[CardEffect] = None) extends Card(name, description) {
+                        protected val _cardEffect: Option[CardEffect] = None)
+                        extends Card(name, description) with IUnitCard {
 
-  private var _currentStrength: Int = _strength
+  protected var _currentStrength: Int = _strength
 
-  /** @return The default strength of the card. */
+
   def strength: Int = _strength
 
-  /** @return The current strength of the card. */
   def currentStrength: Int = _currentStrength
 
-  /** Sets the current strength of the card.
-   *  @param newStrength The new strength of the card.
-   * */
   def currentStrength_=(newStrength: Int): Unit = {
     _currentStrength = newStrength.max(0)
   }
+
 
   def cardEffect: Option[CardEffect] = _cardEffect
 

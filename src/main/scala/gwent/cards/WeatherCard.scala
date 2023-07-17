@@ -1,24 +1,35 @@
 package cl.uchile.dcc
 package gwent.cards
 
-import gwent.board.CardVisitor
-import gwent.Player
-
+import gwent.board.{Board, BoardSection}
 import gwent.cardEffects.CardEffect
+
+import cl.uchile.dcc.gwent.player.Player
 
 /** Class used for instantiating weather type cards in Gwent.
  *
  *  @param name The name of the card.
+ *  @param description The description of the card
+ *  @param cardEffect The effect of the card
+ *  @param affectedCard The boolean 3-tuple that determines which cards are affected by the card effect,
+ *                      ie: (Melee, Ranged, Siege)
  *  */
 class WeatherCard(name: String,
                   description: String,
-                  protected val _cardEffect: Option[CardEffect] = None) extends Card(name, description) {
+                  protected val _cardEffect: CardEffect,
+                  private val _affectedCards: (Boolean, Boolean, Boolean)
+                  ) extends Card(name, description) {
 
-  def cardEffect: Option[CardEffect] = _cardEffect
+  /** @return Which cards does this weather card affect (Melee, Ranged, Siege) */
+  def affectedCards: (Boolean, Boolean, Boolean) = _affectedCards
 
-  def accept(visitor: CardVisitor, player: Player): Unit = {
-    visitor.visit(player, this)
+  /** @return The effect of the card. */
+  def cardEffect: CardEffect = _cardEffect
+
+  def accept(section: BoardSection, board: Board): Unit = {
+    board.weather = this
   }
+
   override def canEqual(that: Any): Boolean = that.isInstanceOf[WeatherCard]
 
   override def equals(that: Any): Boolean = {

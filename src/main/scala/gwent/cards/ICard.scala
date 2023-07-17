@@ -1,8 +1,7 @@
 package cl.uchile.dcc
 package gwent.cards
 
-import gwent.Player
-import gwent.board.CardVisitor
+import gwent.board.{Board, BoardSection}
 
 /** Trait representing a card in Gwent. It shows the basic properties of every card in the game.
  * */
@@ -24,9 +23,9 @@ trait ICard {
   /** @return The description of the card */
   def description: String = _description
 
-  /** Calls the appropriate method on the CardPlacer class according to the type of the card, in order to handle
-   * the placement of the card on the board.
+  /** Handles the placement of the card by calling the appropriate method on the BoardSection
+   *  or Board class according to the type of the card and the player that played it.
    */
-  def accept(visitor: CardVisitor, player: Player): Unit
+  def accept(section: BoardSection, board: Board): Unit
 
 }
