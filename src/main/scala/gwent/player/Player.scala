@@ -1,10 +1,9 @@
 package cl.uchile.dcc
-package gwent
+package gwent.player
 
-import cards.{Card, ICard}
 import gwent.board.{Board, BoardSection}
-
-import cl.uchile.dcc.gwent.controller.GameController
+import gwent.cards.ICard
+import gwent.controller.GameController
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -12,31 +11,31 @@ import scala.util.Random
 /**
  * Class that implements the IPlayer trait. The player starts with 2 gems, its initial deck is shuffled, and then 10
  * cards are drawn from it to the player's hand. It also holds a reference to a game board and the section assigned to
- * the player that start as None.
+ * the player that start as None. The player will hold a reference copy to the deck given as a parameter.
  *
  *  @param name The name of the player (type: String).
  *  @param deck The initial deck of cards for the player, a deck of 25 cards must be given (type: List[Card]).
  */
-class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICard]) extends IPlayer with Equals {
+class Player(private val _name: String, private val _deck: ArrayBuffer[ICard]) extends IPlayer with Equals {
 
   /** Player initialization */
-  require(initialDeck.size == 25, "The deck given must have 25 cards")
-  private var _deck: ArrayBuffer[ICard] = initialDeck.clone()
+  require(_deck.size == 25, "The deck given must have 25 cards")
   private var _gems: Int = 2
-  private var _hand: ArrayBuffer[ICard] = ArrayBuffer.empty[ICard]
+  private val _hand: ArrayBuffer[ICard] = ArrayBuffer.empty[ICard]
   private var _assignedSection: Option[BoardSection] = None
   private var _board: Option[Board] = None
   private var observer: GameController = _
   private var _alive: Boolean = true
   shuffleDeck()
   drawCards(10)
-  
+
   /** @return The name of the player. */
   def name: String = _name
 
   /** @return The assigned section of the board to the player. */
   def assignedSection: Option[BoardSection] = _assignedSection
 
+  /** Assigns a board section to the player. */
   def assignedSection_=(section: BoardSection): Unit = {
     _assignedSection = Some(section)
   }
@@ -44,6 +43,7 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
   /** @return The board the player is associated with. */
   def board: Option[Board] = _board
 
+  /** Assigns a board to the player  */
   def board_=(board: Board): Unit = {
     _board = Some(board)
   }
@@ -59,7 +59,6 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
       _gems -= 1
     }
     if (gems == 0) {
-      _alive = false
       notifyObserver()
     }
   }
@@ -78,23 +77,25 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
     val numCards = math.min(cards, 25 - _hand.size)
     for (_ <- 0 until numCards) {
       if (_deck.nonEmpty) {
-        val drawnCard: ICard = _deck.last
-        _deck.dropRightInPlace(1)
+        val drawnCard: ICard = _deck.head
+        _deck.remove(0)
         _hand += drawnCard
       }
     }
   }
 
   def playCard(position: Int): Unit = {
-    if (position > _hand.size) {
-      throw new Error("The specified card does not exist.")
-    }
     if (_board.isEmpty) {
-      throw new Error("The player doesn't have a game board assigned.")
+      throw NoBoardAssignedException("No board has been assigned to the player")
     }
-    val card: ICard = _hand(position-1)
-    _hand -= card
-    _board.foreach(_.placeCard(this, card))
+    else if (position > _hand.size || position < 0) {
+      throw InvalidCardException("The specified card does not exist.")
+    }
+    else {
+      val card: ICard = _hand(position - 1)
+      _hand -= card
+      card.accept(_assignedSection.get, _board.get)
+    }
   }
 
   /** Registers a game controller as an observer of the player
@@ -104,9 +105,9 @@ class Player(private val _name: String, private val initialDeck: ArrayBuffer[ICa
     observer = newObserver
   }
 
-  /** Notifies the game controller of a change in state in the player */
+  /** Notifies the game controller when the player has lost all its gems. */
   private def notifyObserver(): Unit = {
-    if (_gems == 0) {
+    if (observer != null) {
       observer.update(this)
     }
   }

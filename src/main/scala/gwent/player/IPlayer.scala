@@ -1,6 +1,5 @@
 package cl.uchile.dcc
-package gwent
-
+package gwent.player
 
 /** Trait that defines all the common behaviours of a player in the game Gwent */
 trait IPlayer {
