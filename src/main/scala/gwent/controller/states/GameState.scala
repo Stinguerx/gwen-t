@@ -4,23 +4,36 @@ package gwent.controller.states
 import gwent.controller.GameController
 
 class GameState protected (val context: GameController) {
+
+  /** Method for starting the game. */
   def startMatch(): Unit = {
-    InvalidActionException("Start Match")
+    throw InvalidActionException("Start Match")
   }
+
+  /** Method called when the player decides to play a card.
+   * @param card The index of the card played.
+   * */
   def playCard(card: Int): Unit = {
-    InvalidActionException("Play Card")
+    throw InvalidActionException("Play Card")
   }
 
+  /** Method called when the player decides to pass the turn. */
   def passTurn(): Unit = {
-    InvalidActionException("Pass Turn")
+    throw InvalidActionException("Pass Turn")
   }
 
+  /** Method for starting a new round in the game. */
   def startRound(): Unit = {
-    InvalidActionException("Start Round")
+    throw InvalidActionException("Start Round")
   }
 
+  /** Method used at the end of each round to calculate who won. */
   def calculateScores(): Unit = {
-    InvalidActionException("Calculate Scores")
+    throw InvalidActionException("Calculate Scores")
   }
 
+  /** Method used when one or both players lost their gems, thus ending the game. */
+  def endMatch(): Unit = {
+    throw InvalidActionException("End Match")
+  }
 }

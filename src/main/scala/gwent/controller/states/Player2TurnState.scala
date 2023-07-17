@@ -3,6 +3,7 @@ package gwent.controller.states
 
 import gwent.controller.GameController
 
+/** State where player 2 (the computer) can either play a card or pass the turn. */
 class Player2TurnState(context: GameController) extends GameState(context) {
 
   override def playCard(card: Int): Unit = {
