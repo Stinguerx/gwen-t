@@ -2,7 +2,11 @@ package cl.uchile.dcc
 package gwent.cardTest
 
 import gwent.cards._
+
+import gwent.cardEffects.CardEffect
 import munit.FunSuite
+
+import scala.collection.mutable.ArrayBuffer
 
 class RangedCardTest extends FunSuite {
 
@@ -50,7 +54,13 @@ class RangedCardTest extends FunSuite {
 
   test("Equals returns false when comparing a RangedCard with another type of Card") {
     val card1 = new RangedCard("Archer", "desc", 5)
-    val card2 = new WeatherCard("Frost", "desc")
+    val badClimateEffect: (ICard, ArrayBuffer[_ <: IUnitCard]) => Unit = (originCard, affectedCards) => {
+      affectedCards.foreach(card => card.currentStrength = 1)
+    }
+    val niebla: CardEffect = new CardEffect("Efecto Niebla impenetrable",
+      "Establece el valor de fuerza de todas las cartas de combate a distancia a 1.",
+      badClimateEffect)
+    val card2 = new WeatherCard("Niebla impenetrable", "desc", niebla, (false, true, false))
     assert(!card1.equals(card2))
   }
 
